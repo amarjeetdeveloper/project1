@@ -1,10 +1,12 @@
 const mongoose=require("mongoose")
 const ObjectId=mongoose.schema.Types.ObjectId
-const blogSchema=new mongoose.Schema({
+const blogSchema=new mongoose.Schema(
+    {
+
  title: {
     type:String,
     required:true,
- }, 
+      }, 
 body: {
     type:String,
     required:true,
@@ -21,15 +23,15 @@ authorId: {
      type:[String],
      required:true
  },  
+
  subcategory: {
    type:[String]
  },
-
- 
-    type:Boolean, 
+isDeleted:{
+   type:Boolean, 
     default: false 
  }, 
-publishedAt:Date,
+publishedAt : Date,
     
     isPublished: {
        type:Boolean,
