@@ -57,6 +57,6 @@ const getSpecificAllBlogs = async function (req, res) {
 // };
 module.exports.deletequeryParams=deletequeryParams
 module.exports.createBlog = createBlog
-
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
+module.exports.updateBlog=updateBlog
 
