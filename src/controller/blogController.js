@@ -61,10 +61,23 @@ const getSpecificAllBlogs = async function (req, res) {
       res.status(500).send({error:err.message})
     }
   }
-     
+    
+
+  const deletequeryParams=async function(req,res)
+{
+  
+    let data1=req.params.query;
+    let data=req.body
+    let deletequeryP=await blogModel.deleteOne({$and:[data1]})
+    if (data1){
+    
+  }
+ 
+};
 
 
 module.exports.createBlog = createBlog
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
 module.exports.updateBlog=updateBlog
+module.exports.deletequeryParams=deletequeryParams
 
