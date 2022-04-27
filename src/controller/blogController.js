@@ -1,6 +1,9 @@
 const blogModel = require("../model/blogModel")
 const authorModel = require("../model/authorModel")
 
+
+
+//2
 const createBlog = async function (req, res) {
     try {
         let data = req.body
@@ -19,7 +22,7 @@ const createBlog = async function (req, res) {
     }
 }
 
-
+//2
 const getSpecificAllBlogs = async function (req, res) {
     try {
       let data = req.query;
@@ -42,20 +45,27 @@ const getSpecificAllBlogs = async function (req, res) {
     }
   };
 
-//const deletequeryParams=async function(req,res)
-// {
-//   try{
-//     let data1=req.params.query;
-//     let data=req.body
-//     let deletequeryP=await blogModel.deleteOne({$and:[data1]})
-//     if (data1){
-    
-//   }}
-//   catch(error){
-//     res.status(500).send({statusbar:false,msg:error.message});
-//   }
-// };
-module.exports.deletequeryParams=deletequeryParams
+
+  const updateBlog=async function(req,res){
+    try{
+    let blog_id=req.params.blogId
+    let data=req.body
+    if(!blog_id) return res.status(400).send("no blogId found")
+    let check=await blogModel.findById(blog_id)
+    if(!check) return res.status(400).send("invalid blog Id")
+    if(check.isDeleted==true) return res.status(404).send("we can't update a delete blog")
+     let update=await blogModel.findByIdAndUpdate(blog_id,
+     {$set:data},
+     {new:true}
+     )
+     res.status(400).send({status:true,msg:update})
+    }
+    catch(err){
+      res.status(500).send({error:err.message})
+    }
+  }
+
+
 module.exports.createBlog = createBlog
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
 module.exports.updateBlog=updateBlog
