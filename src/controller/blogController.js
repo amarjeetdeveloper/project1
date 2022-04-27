@@ -47,3 +47,4 @@ const getSpecificAllBlogs = async function (req, res) {
 module.exports.createBlog = createBlog
 
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
+
