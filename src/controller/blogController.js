@@ -66,7 +66,25 @@ const getSpecificAllBlogs = async function (req, res) {
   }
 
 
+  const deleteBlog = async function (req, res) {
+    try {
+  let blogId = req.params.blogId;
+  if(!blogId) return res.status(404).send("no such blogId")
+  let blog = await blogModel.findById(blogId)
+  if (!blog)  return res.status(400).send("No such blog exists");
+  if(blog.isDeleted==true)  return res.status(404).send("this block is already deleted")
+  let deletedBlog = await blogModel.findOneAndUpdate({ _id: blogId }, {$set:{isDeleted: true}}, {new: true});
+  res.send({ status: true, data: deletedBlog });
+    }
+
+  catch (err) {
+        res.status(500).send({msg:"error", error: err.message })
+    }
+}
+
+
 module.exports.createBlog = createBlog
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
 module.exports.updateBlog=updateBlog
+module.exports.deleteBlog=deleteBlog
 
