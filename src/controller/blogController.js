@@ -1,6 +1,9 @@
 const blogModel = require("../model/blogModel")
 const authorModel = require("../model/authorModel")
 
+
+
+//2
 const createBlog = async function (req, res) {
     try {
         let data = req.body
@@ -19,7 +22,7 @@ const createBlog = async function (req, res) {
     }
 }
 
-
+//2
 const getSpecificAllBlogs = async function (req, res) {
     try {
       let data = req.query;
