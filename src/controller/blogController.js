@@ -72,7 +72,7 @@ const getSpecificAllBlogs = async function (req, res) {
   if(!blogId) return res.status(404).send("no such blogId")
   let blog = await blogModel.findById(blogId)
   if (!blog)  return res.status(400).send("No such blog exists");
-  if(blog.isDeleted==true)  return res.status(404).send("this block is already deleted")
+  if(blog.isDeleted==true)  return res.status(404).send("this blog is already deleted")
   let deletedBlog = await blogModel.findOneAndUpdate({ _id: blogId }, {$set:{isDeleted: true}}, {new: true});
   res.send({ status: true, data: deletedBlog });
     }
@@ -81,10 +81,18 @@ const getSpecificAllBlogs = async function (req, res) {
         res.status(500).send({msg:"error", error: err.message })
     }
 }
-
+ const deleteparams =async function(req,res){
+    
+let data =req.query;
+const deleteByQuery=await blogModel.updateMany({$and:[data,{isDeleted:false},{isPublished:true}]},
+  {isDeleted:true},{new:true})
+  if(!deleteByQuery) return res.status(404).send("blog doesn't exist")
+ res.status(200).send({status:true,msg:deleteByQuery})
+}
 
 module.exports.createBlog = createBlog
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
 module.exports.updateBlog=updateBlog
 module.exports.deleteBlog=deleteBlog
+module.exports.deleteparams=deleteparams
 
