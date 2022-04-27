@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-const ObjectId=mongoose.schema.Types.ObjectId
+const ObjectId=mongoose.Schema.Types.ObjectId
 const blogSchema=new mongoose.Schema(
     {
 
