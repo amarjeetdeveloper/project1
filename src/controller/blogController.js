@@ -66,17 +66,7 @@ const getSpecificAllBlogs = async function (req, res) {
   }
     
 
-  const deletequeryParams=async function(req,res)
-{
-  
-    let data1=req.params.query;
-    let data=req.body
-    let deletequeryP=await blogModel.deleteOne({$and:[data1]})
-    if (data1){
-    
-  }
- 
-};
+
 
 
   const deleteBlog = async function (req, res) {
