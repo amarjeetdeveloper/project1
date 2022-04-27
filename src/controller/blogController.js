@@ -42,7 +42,7 @@ const getSpecificAllBlogs = async function (req, res) {
     }
   };
 
-// const deletequeryParams=async function(req,res)
+//const deletequeryParams=async function(req,res)
 // {
 //   try{
 //     let data1=req.params.query;
