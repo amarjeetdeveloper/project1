@@ -99,14 +99,14 @@ const getSpecificAllBlogs = async function (req, res) {
 
  
  const deleteParams =async function(req,res){
-    
+   try{ 
 let data =req.query;
 const deleteByQuery=await blogModel.updateMany({$and:[data,{isDeleted:false},{isPublished:true}]},
   {isDeleted:true},{new:true})
   if(!deleteByQuery) return res.status(404).send("blog doesn't exist")
  res.status(200).send({status:true,msg:deleteByQuery})
 }
-catch(err){
+catch (err){
   res.status(500).send({error:err.message})
 }
 }
