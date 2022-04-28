@@ -1,4 +1,5 @@
 const authorModel = require("../model/authorModel")
+const jwt = require('jsonwebtoken')
 
 const createAuthor = async function (req, res) {
     try {
@@ -24,39 +25,18 @@ const createAuthor = async function (req, res) {
 
 }
 
-const authorLogin = async function (req, res) {
-    try {
-        let authorName = req.body.email;
-        let password = req.body.password;
-
-        let particularAuthor = await authorModel.findOne({ email: authorName, password: password });
-
-        if (!particularAuthor)
-            return res.status(404).send({
-                status: false,
-                logInFailed: "username or the password is not correct",
-            });
-
-
-        let token = jwt.sign(
-            {
-                authId: particularAuthor._id.toString(),
-                batch: "batch 19 phase2",
-                organisation: "FunctionUp",
-            },
-            "batch 19 phase2"
-        );
-
-        return res.status(201).send({ status: true, token: token });
-
-    } catch (err) {
-        return res.status(500).send({ ERROR: err.message });
-    }
+const login = async function (req, res) {
+    let data = req.body
+    let { email, password } = data
+    if (Object.keys(data).length == 0) return res.status(404).send({ status: false, msg: "no data found" })
+    if (!email) return res.status(401).send({ status: false, msg: "emailId required" })
+    if (!password) return res.status(401).send({ status: false, msg: "password required" })
+    let user = await authorModel.findOne({ email: email, password: password })
+    if (!user) return res.status(401).send({ status: false, msg: "emailId or password incorrect" })
+    let token = await jwt.sign({ userId: user._id.toString() }, "IUBGIU22NKJWWEW89NO2ODWOIDH2")
+    res.setHeader("x-api-key", "token")
+    res.status(201).send({ status: true, msg: "successful login", token })
 }
 
-
-
-
-module.exports.authorLogin = authorLogin;
-
 module.exports.createAuthor = createAuthor
+module.exports.login = login
