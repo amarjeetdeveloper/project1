@@ -11,7 +11,7 @@ router.get('/getSpecificAllBlogs',blogController.getSpecificAllBlogs);
 router.put('/updateBlog/:blogId',blogController.updateBlog)
 router.delete('/deleteblogs/:blogId',blogController.deleteBlog)
 router.delete('/deletequery',blogController.deleteparams)
-
+router.post('/login',authorController.login)
 
 
 
