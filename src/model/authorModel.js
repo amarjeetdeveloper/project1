@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 
 const authorSchema = new mongoose.Schema( {
-firstname: {type:String, require:true}, 
-lastname: {type:String, require:true},
+firstName: {type:String, require:true}, 
+lastName: {type:String, require:true},
 title: {type:String, requires:true, enum:["Mr", "Mrs", "Miss"]}, 
 email: {type:String, requires:true, unique:true, validate:{
           validator: validator.isEmail, message: "{VALUE} is not a valid email",isAsync: false}}, 

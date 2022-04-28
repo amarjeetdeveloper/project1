@@ -22,24 +22,25 @@ const createBlog = async function (req, res) {
     }
 }
 
-//2
+//3
 const getSpecificAllBlogs = async function (req, res) {
     try {
       let data = req.query;
-    //   let filter = {
-    //     isDeleted: false,
-    //     isPublished: true,
-    ///     ...data,
-    //   };
+      let filter = {
+        isDeleted: false,
+        isPublished: true,
+       ...data,
+      };
   
-      let getSpecificBlogs = await blogModel.find({$and:[data,{isDeleted:false},{isPublished:true}]})
+      // let getSpecificBlogs = await blogModel.find({$and:[data,{isDeleted:false},{isPublished:true}]})
   
-      if (getSpecificBlogs.length == 0) {
-        return res.status(400).send({ status: false, data: "No blogs can be found" });
+      // if (getSpecificBlogs.length == 0) {
+      //   return res.status(400).send({ status: false, data: "No blogs can be found" });
+      let blogData = await blogModel.find(filter)
+      if(!blogData) return res.status(404).send({status:false, msg:"No such author exists"})
           
-     } else {
-        return res.status(200).send({ status: true, data: getSpecificBlogs });
-      }
+     res.status(200).send({ status: true, data: getSpecificBlogs });
+      
     } catch (err) {
       res.status(500).send({ status: false, msg: err.message });
     }
@@ -84,7 +85,9 @@ const getSpecificAllBlogs = async function (req, res) {
         res.status(500).send({msg:"error", error: err.message })
     }
 }
- const deleteparams =async function(req,res){
+
+ 
+ const deleteParams =async function(req,res){
     
 let data =req.query;
 const deleteByQuery=await blogModel.updateMany({$and:[data,{isDeleted:false},{isPublished:true}]},
@@ -96,10 +99,6 @@ const deleteByQuery=await blogModel.updateMany({$and:[data,{isDeleted:false},{is
 module.exports.createBlog = createBlog
 module.exports.getSpecificAllBlogs = getSpecificAllBlogs
 module.exports.updateBlog=updateBlog
-<<<<<<< HEAD
-module.exports.deletequeryParams=deletequeryParams
-=======
+module.exports.deleteParams=deleteParams
 module.exports.deleteBlog=deleteBlog
-module.exports.deleteparams=deleteparams
->>>>>>> f7afdb1e51b70e62e1fd2f2d6f12f631ebba626b
 
