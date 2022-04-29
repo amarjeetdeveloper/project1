@@ -29,6 +29,7 @@ const authorization = async function (req, res, next) {
         if (!decodedToken) return res.status(400).send({ status: false, msg: "invalid token" })
 
         let blog_Id = req.params.blogId
+        //if(!blog_Id.length===null) return res.status(404).send({ status: false, msg: "blogId not found" })
         let userId = decodedToken.userId
         let authorData=await blogModel.find({_id:blog_Id,authorId:userId})
        if (authorData.length==0)return res.send({ status: false, msg:"you are not authorized" })

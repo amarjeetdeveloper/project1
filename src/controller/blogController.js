@@ -56,9 +56,7 @@ const updateBlog = async function (req, res) {
     if (!subcategory) return res.status(401).send({ status: false, msg: "subcategory is missing" })
 
     let blog_Id = req.params.blogId //input takes from path param
-    if (!req.params.blogId) return res.status(401).send({ status: false, msg: "Blog Id is required" })
     let check = await blogModel.findById(blog_Id)  //validting blogId
-    if (!check) return res.status(404).send({ status: false, msg: "invalid BlogId" })
     if (check.isDeleted == true) return res.status(404).send({ status: false, msg: "This blog is already Deleted" })
     //=----------------------------------------------update here------------------------------------------------------//
     let update = await blogModel.findByIdAndUpdate(blog_Id,
@@ -75,10 +73,8 @@ const updateBlog = async function (req, res) {
 //5========================================DeletedBlog By Path Param Id==============================================//
 const deleteBlog = async function (req, res) {
   try {
-    let blogId = req.params.blogId; //input takes from path params
-    if (!blogId) return res.status(404).send({ status: false, msg: "blogId not found" }) 
+    let blogId = req.params.blogId; //input takes from path params 
     let blog = await blogModel.findById(blogId)//blogId check form blogModel
-    if (!blog) return res.status(400).send({ status: false, msg: "BlogId is invalid" });
     if (blog.isDeleted == true) return res.status(404).send({ status: false, msg: "this blog is already deleted" })
 
     //--------------------------------------------------Deleted here--------------------------------------------------//
