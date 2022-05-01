@@ -1,8 +1,9 @@
 const blogModel = require("../model/blogModel")
 const authorModel = require("../model/authorModel")
+const { default: mongoose } = require("mongoose")
 
 
-//3 CreateBlog Api
+//3========================================= CreateBlog Api==========================================================
 //error tag req. not working
 const createBlog = async function (req, res) {
   try {
@@ -12,7 +13,7 @@ const createBlog = async function (req, res) {
 
     if (!authorId) return res.status(404).send({ status: false, msg: "authorId is missing" })
 
-    if (authorId.length !== 24) return res.status(401).send({ status: false, msg: "Enter a Valid AuthorId"})
+    if (!mongoose.isValidObjectId(authorId)) return res.status(401).send({ status: false, msg: "Enter a Valid AuthorId"})
     //--------------------------------checking authorId validity from author Model-------------------------------//
     let AuthorData = await authorModel.findById(authorId) 
     if (!AuthorData) return res.status(401).send({ status: false, msg: "invalid authorId" })
