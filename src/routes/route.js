@@ -16,7 +16,7 @@ router.post('/createBlog',middleWare.authentication,blogController.createBlog);
 router.get('/getSpecificAllBlogs',middleWare.authentication,blogController.getSpecificAllBlogs);
 router.put('/updateBlog/:blogId',middleWare.authorization,blogController.updateBlog)
 router.delete('/deleteblogs/:blogId',middleWare.authorization,blogController.deleteBlog)
-router.delete('/deletequery',middleWare.authentication,blogController.deleteparams)
+router.delete('/deletequery',middleWare.authorization2,blogController.deleteparams)
 
 
 

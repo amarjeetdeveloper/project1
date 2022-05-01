@@ -94,12 +94,12 @@ const deleteBlog = async function (req, res) {
 //6=======================================DeleteBlog By query params===================================================//
 const deleteparams = async function (req, res) {
   try {
-    let data = req.query; //input takes from query
-    if (Object.keys(data).length == 0) return res.status(404).send({ status: false, msg: "Query data empty" })
+           let data = req.query; //input takes from query
+    // if (Object.keys(data).length == 0) return res.status(404).send({ status: false, msg: "Query data empty" })
 
     //---------------------------------------delete is done here--------------------------------------//
     const deleteByQuery = await blogModel.updateMany(
-      { $and: [data, { isDeleted: false }, { isPublished: true }] },
+      { $and: [data, { isDeleted: false }] },
       { $set: { isDeleted: true ,DeletedAt:new Date()} },
       { new: true })
     if (!deleteByQuery) return res.status(404).send({ status: false, msg: "Not a valid Blog" })
