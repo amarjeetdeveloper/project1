@@ -9,18 +9,18 @@ const createAuthor = async function (req, res) {
     try {
 
         let data = req.body
-        if (Object.keys(data).length == 0) return res.status(404).send({ status: false, msg: "Input Can't be Empty" })
+        if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Input Can't be Empty" })
 
         //-------------------------------------------check data validity-----------------------------------------------------//
         let { firstName, lastName, title, email, password } = data
-        if (!firstName) return res.status(404).send({ status: false, msg: "fistName Required" })
-        if (!lastName) return res.status(404).send({ status: false, msg: "lastName Required" })
-        if (!firstName.match(/^[a-zA-Z]+$/)) return res.status(404).send({ status: false, msg: "invalid  fistName" })
-        if (!lastName.match(/^[a-zA-Z]+$/)) return res.status(404).send({ status: false, msg: "invalid lastName" })
-        if (!title) return res.status(404).send({ status: false, msg: "title Required" })
-        if (!email) return res.status(404).send({ status: false, msg: "emailId Required" }) 
-        if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/).test(email)) return res.status(404).send({ status: false, msg: "email Id is invalid" })
-        if (!password) return res.status(404).send({ status: false, msg: "password Required" })
+        if (!firstName) return res.status(400).send({ status: false, msg: "fistName Required" })
+        if (!lastName) return res.status(400).send({ status: false, msg: "lastName Required" })
+        if (!firstName.match(/^[a-zA-Z]+$/)) return res.status(400).send({ status: false, msg: "invalid  fistName" })
+        if (!lastName.match(/^[a-zA-Z]+$/)) return res.status(400).send({ status: false, msg: "invalid lastName" })
+        if (!title) return res.status(400).send({ status: false, msg: "title Required" })
+        if (!email) return res.status(400).send({ status: false, msg: "emailId Required" }) 
+        if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/).test(email)) return res.status(400).send({ status: false, msg: "email Id is invalid" })
+        if (!password) return res.status(400).send({ status: false, msg: "password Required" })
 
 
         //-------------------------------/check email duplicacy/------------------------------------------------------//
