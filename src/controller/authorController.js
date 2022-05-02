@@ -17,8 +17,10 @@ const createAuthor = async function (req, res) {
         if (!lastName) return res.status(404).send({ status: false, msg: "lastName Required" })
         if (!firstName.match(/^[a-zA-Z]+$/)) return res.status(404).send({ status: false, msg: "invalid  fistName" })
         if (!lastName.match(/^[a-zA-Z]+$/)) return res.status(404).send({ status: false, msg: "invalid lastName" })
+        if (!title) return res.status(404).send({ status: false, msg: "title Required" })
         if (!email) return res.status(404).send({ status: false, msg: "emailId Required" }) 
         if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/).test(email)) return res.status(404).send({ status: false, msg: "email Id is invalid" })
+        if (!password) return res.status(404).send({ status: false, msg: "password Required" })
 
 
         //-------------------------------/check email duplicacy/------------------------------------------------------//

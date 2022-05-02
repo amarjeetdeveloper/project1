@@ -10,8 +10,10 @@ const createBlog = async function (req, res) {
     let data = req.body //data come from body
     if (Object.keys(data).length == 0) return res.status(404).send({ status: false, msg: "Input Can't Be Empty" })
     let {title,body,authorId,category}=data
-
+    if (!title) return res.status(404).send({ status: false, msg: "title is missing" })
+    if (!body) return res.status(404).send({ status: false, msg: "body is missing" })
     if (!authorId) return res.status(404).send({ status: false, msg: "authorId is missing" })
+    if (!category) return res.status(404).send({ status: false, msg: "category is missing" })
 
     if (!mongoose.isValidObjectId(authorId)) return res.status(401).send({ status: false, msg: "Enter a Valid AuthorId"})
     //--------------------------------checking authorId validity from author Model-------------------------------//

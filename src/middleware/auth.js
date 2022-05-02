@@ -58,7 +58,6 @@ const authorization2 = async function (req, res, next) {
         let subcat=req.query.subcategory
         let tag=req.query.tags
         let publish=req.query.isPublished
-        console.log(publish)
 
         if(Auth_Id){
         if(Auth_Id!=userId)return res.send({ status: false, msg:"you are not authorized" })
