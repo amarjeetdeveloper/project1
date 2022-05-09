@@ -1,100 +1,79 @@
-const authorModel = require("../model/authorModel")
-const jwt = require('jsonwebtoken')
+const Author = require('../model/authorModel');
+const validateEmail = require('email-validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+//Add author Router handler
+const addAuthor = async (req, res) => {
+  try { 
+    let {...data} = req.body; //getting the data from req.body in a spread operator
+    //Below is the validation for the data
+    if (Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Data is required to add a Author" });
 
-  
-//===========================================1-Create Author Api====================================================//
+    //Below is the validation for the data for email, password, name
+    if(!data.fname) return res.status(400).send({ status: false, msg: "First Name is required" });
+    if(!data.lname) return res.status(400).send({ status: false, msg: "Last Name is required" });
+    if(!data.title) return res.status(400).send({ status: false, msg: "Title is required" });
+    if(!data.email) return res.status(400).send({ status: false, msg: "Email is required" });
+    if(!data.password) return res.status(400).send({ status: false, msg: "Password is required" });
 
-const createAuthor = async function (req, res) {
+    data.password = await bcrypt.hash(data.password, 10); 
+    
+    let validString = /\d/; //validating the string for numbers
 
-   try {
+    //checking if the firstName and lastName are valid string
+    if(validString.test(data.fname)) return res.status(400).send({ status: false, msg: "Enter a valid First Name" });
+    if(validString.test(data.lname)) return res.status(400).send({ status: false, msg: "Enter a valid Last Name" });
 
-        let data = req.body
+    let validTitle = ['Mr', 'Mrs', 'Miss']; //validating the title
 
-        if (!Object.keys(data).length) return res.status(400).send({ status: false, msg: "Please Provides the Details" })
+    //checking if the title is valid
+    if(!validTitle.includes(data.title)) return res.status(400).send({ status: false, msg: "Title should be one of Mr, Mrs, Miss" });
 
-        //-------------------------------------------check data validity-----------------------------------------------------//
-        
-        if (!data.fname) return res.status(400).send({ status: false, msg: "firstName is Required" })
+    //checking if the email is valid by using email-validator package
+    if(!validateEmail.validate(data.email)) return res.status(400).send({ status: false, msg: "Enter a valid email" })
+    
+    //checking if the email is already exist
+    let uniqueEmail = await Author.findOne({ email: data.email });
+    if(uniqueEmail) return res.status(400).send({ status: false, msg: "Email already exist" })
 
-        if (!data.lname) return res.status(400).send({ status: false, msg: "lastName is Required" })
-
-        if (!data.fname.match(/^[a-zA-Z]+$/)) return res.status(400).send({ status: false, msg: "invalid  firstName" })
-
-        if (!data.lname.match(/^[a-zA-Z]+$/)) return res.status(400).send({ status: false, msg: "invalid lastName" })
-
-        if (!data.title) return res.status(400).send({ status: false, msg: "title is Required" })
-
-        if (["Mr", "Mrs", "Miss"].indexOf(data.title) == -1) return res.status(400).send({status: false,data: "Enter a valid title Mr or Mrs or Miss ",});
-
-        if (!data.email) return res.status(400).send({ status: false, msg: "emailId is Required" }) 
-
-        if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/).test(data.email)) return res.status(400).send({ status: false, msg: "email Id is invalid" })
-
-        if (!data.password) return res.status(400).send({ status: false, msg: "password is Required" })
-
-        //-------------------------------/check email duplicacy/------------------------------------------------------//
-
-        let emailCheck = await authorModel.findOne({ email: data.email })
-
-        if (emailCheck) return res.status(409).send({ status: false, msg: "emailId already Registerd" })
-
-        //--------------------------------------------create author-----------------------------------------------------//
-        
-        let saveData = await authorModel.create(data)
-
-        res.status(201).send({ status: true, msg:"Author Created Sucessfully",data:saveData })
-
-    }
-    catch (err) {
-
-        res.status(500).send({ error: err.message })
-
-    }
-
-}
-
-//============================================2-Login and Token Generation Api=====================================//
-
-const login = async function (req, res) {
-
-    try{
-
-    let data = req.body
-
-    if (!Object.keys(data).length) return res.status(404).send({ status: false, msg: "Please Provide the Correct Login Details" })
-
-    if (!data.email) return res.status(401).send({ status: false, msg: "emailId is required" })
-
-    if (!data.password) return res.status(401).send({ status: false, msg: "password is required" })
-
-    if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/).test(data.email)) return res.status(400).send({ status: false, msg: "email Id is invalid" })
-
-    //-------------------------------------check the email and password--------------------------------------------//
-
-    let user = await authorModel.findOne({ email: data.email, password: data.password })
-
-    if (!user) return res.status(401).send({ status: false, msg: "emailId or password incorrect" })
-
-    //-------------------------------------------Token Generation------------------------------------------------//
-
-    let token = await jwt.sign({ 
-                          userId: user._id.toString(),
-                        iat:Math.floor(Date.now()/100),
-                        exp:Math.floor(Date.now()/100)
-                    },"IUBGIU22NKJWWEW89NO2ODWOIDH2")
-
-    res.setHeader("x-api-key", token)
-
-    res.status(201).send({ status: true, msg: "Author login successful!!", token })
-}
-
-catch (err) {
-
+    let showAuthorData = await Author.create(data);
+    res.status(201).send({ status: true, data: showAuthorData });
+  } catch(err) {
     res.status(500).send({ status: false, msg: err.message });
+  }
 }
+
+//Login author Router handler
+const loginAuthor = async (req, res) => {
+  try {
+    let {...data} = req.body;//getting the data from req.body in a spread operator.
+
+    //Below is the validation for the data
+    if(Object.keys(data).length == 0) return res.status(400).send({ status: false, msg: "Email and password is required to login" });
+
+    if(!data.email) return res.status(400).send({ status: false, msg: "Email is required" });
+    if(!data.password) return res.status(400).send({ status: false, msg: "Password is required" });
+
+    //checking if the email is valid by using email-validator package
+    if(!validateEmail.validate(data.email)) return res.status(400).send({ status: false, msg: "Enter a valid email" })
+
+    //checking if the email is already exist
+    let getAuthorData = await Author.findOne({ email: data.email });
+    if(!getAuthorData) return res.status(401).send({ status: false, msg: "Email is incorrect" });
+
+    let checkPassword = await bcrypt.compare(data.password, getAuthorData.password)
+    if(!checkPassword) return res.status(401).send({ status: false, msg: "Password is incorrect" });
+
+    //generating the token for logged in author
+    let token = jwt.sign({authorId: getAuthorData._id}, "Blog Project-1", {expiresIn: '1d'});
+
+    //sending the token to the client in response in the header
+    res.setHeader("x-api-key", token);
+    res.status(200).send({ status: true, msg: "Logged in successfully", token: token });
+  }catch(err) {
+    res.status(500).send({ status: false, error: err.message });
+  }
 }
 
-
-module.exports ={createAuthor,login}
-
+module.exports = {addAuthor,loginAuthor}; //exporting the router handlers
