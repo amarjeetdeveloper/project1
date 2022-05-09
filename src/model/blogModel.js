@@ -1,54 +1,42 @@
-const mongoose = require("mongoose")
-const ObjectId = mongoose.Schema.Types.ObjectId
-const blogSchema = new mongoose.Schema(
-    {
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Schema.Types.ObjectId; //creating objectId type 
 
-        title:
-        {
-            type: String,
-            required: 'Blog title is Required',
-            trim:true
-        },
-        body:
-        {
-            type: String,
-            required: 'Blog Body is Required',
-            trim:true
-        },
-        authorId: {
-            type: ObjectId,
-            trim:true,
-            required: 'AuthorId is Required',
-            ref: 'Author'
-        },
-        tags: {
-            type:[String],
-            trim:true
-        },
+const blogSchema = new mongoose.Schema({ //creating schema for blog model 
+  title: { 
+    type: String, //type of data in the field should be string
+    required: true, //title is required field
+  },
+  body: {
+    type: String,
+    required: true,
+  },
+  authorId: {
+    type: ObjectId, //type of data in the field should be objectId type
+    ref: 'Author', //ref is used to specify the model name to which the field is referring
+    required: true 
+  },
+  tags: [String], //tags is an array of string type
+  category: {
+    type: [String],
+    required: true,
+  },
+  subcategory: {
+    type: [String],
+  },
+  deletedAt: {
+    type: String,
+  },
+  isDeleted: {
+    type: Boolean, //type of data in the field should be boolean
+    default: false, //isDeleted is a default field with value false
+  },
+  publishedAt: {
+    type: String,
+  },
+  isPublished: {
+    type: Boolean,
+    default: false,
+  }
+},{timestamps:true}) //timestamps is used to add createdAt and updatedAt fields in the schema
 
-        category: {
-            type: [String],
-            required:'Blog category is Required',
-            trim:true
-        },
-
-        subcategory: {
-            type: [String],
-            trim:true
-        },
-        isDeleted: {
-            type: Boolean,
-            default: false,
-        },
-
-        publishedAt: Date,
-        DeletedAt:Date,
-
-        isPublished: {
-            type: Boolean,
-            default: false
-        }
-
-    }, { timestamps: true });
-
-module.exports = mongoose.model('blogModel', blogSchema)
+module.exports=mongoose.model('Blog',blogSchema) //exporting the schema to use in other files
