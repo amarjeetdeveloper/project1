@@ -1,131 +1,69 @@
-const jwt = require("jsonwebtoken")
-const blogModel = require('../model/blogModel')
-const mongoose=require('mongoose')
+const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken');
+const Blog = require('../model/blogModel');
 
+//Below function is to check whether the given string is a valid ObjectId or not
+const isValidObjectId = (ObjectId) => {
+  return mongoose.Types.ObjectId.isValid(ObjectId);
+};
 
-
-//=================================================authentication==================================================//
-
-const authentication = function (req, res, next) {
-
-    try {
-
-        let token = req.headers["x-api-key"]
-
-        if (!token)return res.status(400).send({ status: false, msg: "token not found" })
-
-        let decodedToken = jwt.verify(token, "IUBGIU22NKJWWEW89NO2ODWOIDH2")//verify token
-        
-        if (!decodedToken) return res.status(401).send({ status: false, msg: "invalid token" })
-        
-        next()
+const authentication = (req, res, next) => {
+  try{
+    let token = req.headers["x-Api-key"]; //getting token from header
+    if (!token) {//if token is not present
+      token = req.headers["x-api-key"];//getting token from header
     }
 
-    catch (err) {
-    
-        res.status(500).send({ status: false, msg: err.message });
+    if (!token) {
+      return res.status(401).send({ status: false, msg: "Token must be present" });
     }
-}
 
-//========================================================authorization===============================================//
-
-const authorization = async function (req, res, next) {
-   
-    try {
-      
-        let token = req.headers["x-api-key"]
-      
-        if (!token)return res.status(400).send({ status: false, msg: "token not found" })
-      
-        let decodedToken = jwt.verify(token, "IUBGIU22NKJWWEW89NO2ODWOIDH2")
-      
-        if (!decodedToken) return res.status(401).send({ status: false, msg: "invalid token" })
-
-        let blog_Id = req.params.blogId
-
-        if (!mongoose.isValidObjectId(blog_Id)) return res.status(400).send({ status: false, msg: "Enter a Valid BlogId"})
-
-        let userId = decodedToken.userId
-        
-        let authorData=await blogModel.find({_id:blog_Id,authorId:userId})
-       
-        if (!authorData.length)return res.send({ status: false, msg:"you are not authorized" })
-       
-        next()
-  }
-
-    catch (error) {
+    let decodedToken = jwt.verify(token, "Blog Project-1"); //verifying token with secret key
   
-        res.status(403).send(error.message)
-  
-    }
-}
+    if (!decodedToken) return res.status(401).send({ status: false, msg: "Token is incorrect" });
 
-//==================================================authorization 2===========================================//
-
-const authorization2 = async function (req, res, next) {
-
-    try {
-
-        let token = req.headers["x-api-key"]
-
-        if (!token)return res.status(400).send({ status: false, msg: "token not found" })
-         
-        let decodedToken = jwt.verify(token, "IUBGIU22NKJWWEW89NO2ODWOIDH2")
-
-        if (!decodedToken) return res.status(400).send({ status: false, msg: "invalid token" })
-
-        let data = req.query;
-
-        if (!Object.keys(data).length) return res.status(404).send({ status: false, msg: "Query data empty" })
-
-        let userId = decodedToken.userId
-
-        let Auth_Id = data.authorId
-
-        let cat=data.category
-
-        let subcat=data.subcategory
-
-        let tag=data.tags
-
-        let publish=data.isPublished
-
-        if(Auth_Id){
-            if(Auth_Id!=userId)return res.send({ status: false, msg:"you are not authorized" })
-            next()
-        }
-
-        if(cat){
-            let authorData=await blogModel.find({category:cat,authorId:userId})
-            if (!authorData.length)return res.send({ status: false, msg:"you are not authorized" })
-            next()
-        }
-
-        if(subcat){
-            let authorData=await blogModel.find({subcategory:subcat,authorId:userId})
-            if (!authorData.length)return res.send({ status: false, msg:"you are not authorized" })
-            next()
-        }
-
-        if(tag){
-            let authorData=await blogModel.find({tags:tag,authorId:userId})
-            if (!authorData.length)return res.send({ status: false, msg:"you are not authorized" })
-            next()
-        }
-
-        if(publish){
-            let authorData=await blogModel.find({isPublished:publish,authorId:userId})
-            if (!authorData.length)return res.send({ status: false, msg:"you are not authorized" })
-            next()
-        }
-    
+    req.decodedToken = decodedToken;
+    next(); //if token is correct then next function will be called respectively
   }
-    catch (error) {
-        res.status(403).send(error.message)
-    }
+  catch (err){
+    res.status(500).send({status: false, msg: err.message});
+  }
 }
 
+const authorization = async (req, res, next) => {
+  try {
+    let token = req.headers["x-Api-key"]; //getting token from header
+    token = req.headers["x-api-key"]; 
+    let decodedToken = jwt.verify(token, "Blog Project-1"); //verifying token with secret key
 
+    let loggedInUser = decodedToken.authorId; //getting logged in user id from token
+    let authorLogging;
 
-module.exports={authentication,authorization,authorization2}
+    if(req.body.hasOwnProperty('authorId')) { //if authorId is present in request body
+
+      //checking whether the authorId is valid or not
+      if(!isValidObjectId(req.body.authorId)) return res.status(400).send({ status: false, msg: "Enter a valid author Id" })
+      authorLogging = req.body.authorId; //getting authorId from request body
+    }
+
+    if(req.params.hasOwnProperty('blogId')){ //if blogId is present in request params
+
+      //checking whether the blogId is valid or not
+      if(!isValidObjectId(req.params.blogId)) return res.status(400).send({ status: false, msg: "Enter a valid blog Id" })
+      let blogData = await Blog.findById(req.params.blogId); //getting blog data from database using blogId
+      if(!blogData) return res.status(404).send({ status: false, msg: "Error, Please check Id and try again" });
+      authorLogging = blogData.authorId.toString(); //getting authorId from blog data using blogId and converting it to string
+    }
+    
+    //if authorId is not present in request body or request params or request query
+    if(!authorLogging) return res.status(400).send({ status: false, msg: "AuthorId is required" }); 
+
+    //checking whether the loggedInUser is same as authorLogging or not
+    if(loggedInUser !== authorLogging) return res.status(403).send({status: false, msg: "Error, authorization failed"});
+    next(); //if authorId is same then next function will be called respectively
+  }catch (err){
+    res.status(500).send({status: false, msg: err.message});
+  }
+}
+
+module.exports = {authentication,authorization}; //exporting authentication and authorization functions
