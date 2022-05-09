@@ -1,24 +1,18 @@
-const express=require('express')
-const router = express.Router()
-const authorController=require('../controller/authorController')
-const blogController=require('../controller/blogController')
-const middleWare=require('../middleware/check')
+const express = require('express');
+const {addAuthor,loginAuthor} = require('../controllers/authorController'); //importing authorController
+const {createBlog, getBlogs, updateBlog, deleteBlogById, deleteBlogs} = require('../controllers/blogController'); //importing blogController
+const {authentication,authorization} = require('../middleware/auth'); //importing auth middleware
 
+const router = express.Router();
 
-//-------------------------unprotected apis----------------------//
+router.post('/authors', addAuthor); //adding author route with post method and calling addAuthor function from authorController
+router.post('/login', loginAuthor); //adding login route with post method and calling loginAuthor function from authorController
 
-router.post('/authors',authorController.createAuthor);
-router.post('/login',authorController.login);
+//adding blog route with post method and calling 2 middlewares to check authentication and authorization and calling the respective functions from blogController.
+router.post('/blogs', authentication, authorization, createBlog); 
+router.get('/blogs', authentication, getBlogs);
+router.put('/blogs/:blogId', authentication, authorization, updateBlog);
+router.delete('/blogs/:blogId', authentication, authorization, deleteBlogById);
+router.delete('/blogs', authentication, deleteBlogs);
 
-//--------------------------protected apis----------------------------------------//
-
-router.post('/blogs',middleWare.authentication,blogController.createBlog);
-router.get('/blogs',middleWare.authentication,blogController.getSpecificAllBlogs);
-router.put('/blogs/:blogId',middleWare.authorization,blogController.updateBlog)
-router.delete('/blogs/:blogId',middleWare.authorization,blogController.deleteBlog)
-router.delete('/blogs',middleWare.authorization2,blogController.deleteparams)
-
-
-
-
-module.exports=router
+module.exports = router;
