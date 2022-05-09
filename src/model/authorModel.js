@@ -1,42 +1,31 @@
-const mongoose = require('mongoose');
-//const validator = require('validator');
+const mongoose=require('mongoose')
 
-const authorSchema = new mongoose.Schema({
-
-    fname: { 
-        type: String, 
-        required:'firstName is Required',
-        trim:true
+const authorSchema =new mongoose.Schema({ //creating schema for author model 
+    fname:{
+        type:String, //type of data in the field should be string
+        required:true //firstName is required field
     },
-
-    lname: {
-         type: String,
-         required: 'lastName is Required',
-         trim:true
-        },
-
-    title: { 
-        type: String, 
-        required:'Title is Required', 
-        enum: ["Mr", "Mrs", "Miss"] },
-
-    email: {
-        type: String, 
-        required: 'EmailId is FRequired', 
-        lowercase:true,
-        trim:true,
-        unique: true, 
-      /* validate: {
-             validator:function(check){return /^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(check);},
-            validator: validator.isEmail, message: "{VALUE} is not a valid email", isAsync: false
-        } */
+    lname:{
+        type:String,
+        required:true  
     },
-
+    title: {
+        type: String,
+        required: true,
+        enum: ['Mr', 'Mrs', 'Miss'] //enum is used to restrict the values of the field to be only one of the given values
+    },
+    email:{
+        type:String,
+        required:true,
+        unique:true //email is unique field
+    },
     password: {
-         type: String, 
-         trim:true,
-         required: 'Password is Required' }
+        type: String,
+        required: true
+    },
+    tempPassword: {
+        type: String,
+    },
+},{timestamps:true}); //timestamps is used to add createdAt and updatedAt fields in the schema 
 
-}, { timestamps: true });
-
-module.exports = mongoose.model('Author', authorSchema)
+module.exports = mongoose.model('Author',authorSchema); //exporting the schema to use in other files  
